@@ -8,7 +8,7 @@ import { UnassignTicketFromUserCommand } from './unassign-ticket-from-user.comma
 
 @CommandHandler(UnassignTicketFromUserCommand)
 export class UnassignTicketFromUserCommandHandler
-  implements ICommandHandler<UnassignTicketFromUserCommand>
+  implements ICommandHandler<UnassignTicketFromUserCommand, Ticket>
 {
   constructor(
     private readonly usersQueryRepository: UsersQueryRepository,

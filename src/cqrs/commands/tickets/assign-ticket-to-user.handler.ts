@@ -8,7 +8,7 @@ import { Ticket } from 'src/ticket/ticket.entity';
 
 @CommandHandler(AssignTicketToUserCommand)
 export class AssignTicketToUserCommandHandler
-  implements ICommandHandler<AssignTicketToUserCommand>
+  implements ICommandHandler<AssignTicketToUserCommand, Ticket>
 {
   constructor(
     private readonly usersQueryRepository: UsersQueryRepository,

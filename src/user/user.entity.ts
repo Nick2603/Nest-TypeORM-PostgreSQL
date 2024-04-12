@@ -1,18 +1,10 @@
+import { BaseEntity } from 'src/database/base.entity';
 import { Ticket } from 'src/ticket/ticket.entity';
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
-  OneToMany,
-} from 'typeorm';
+import { Entity, Column, OneToMany, Index } from 'typeorm';
 
+@Index(['firstName', 'lastName'], { unique: true })
 @Entity()
-export class User {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class User extends BaseEntity {
   @Column({ name: 'first_name' })
   firstName: string;
 
@@ -28,9 +20,10 @@ export class User {
   })
   tickets: Ticket[];
 
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date;
+  // Alternative
+  // @OneToMany('Ticket', 'holder', {
+  //   onUpdate: 'CASCADE',
+  //   onDelete: 'CASCADE',
+  // })
+  // tickets: Ticket[];
 }

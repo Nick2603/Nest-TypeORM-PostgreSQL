@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpStatus,
   Param,
   ParseIntPipe,
   Post,
@@ -16,6 +17,8 @@ import { AssignTicketToUserCommand } from 'src/cqrs/commands/tickets/assign-tick
 import { AssignTicketToUserDto } from './dto/assign-ticket-to-user.dto';
 import { UnassignTicketFromUserCommand } from 'src/cqrs/commands/tickets/unassign-ticket-from-user.command';
 import { UnassignTicketFromUserDto } from './dto/unassign-ticket-from-user.dto';
+import { Ticket } from './ticket.entity';
+import { DeleteResult } from 'typeorm';
 
 @Controller('tickets')
 export class TicketsController {
@@ -27,21 +30,37 @@ export class TicketsController {
 
   @Get()
   async getTickets() {
-    return this.queryBus.execute(new GetTicketsQuery());
+    return this.queryBus.execute<GetTicketsQuery, Promise<Ticket[]>>(
+      new GetTicketsQuery(),
+    );
   }
 
   @Get(':id')
-  async getTicket(@Param('id', new ParseIntPipe()) id: number) {
+  async getTicket(
+    @Param(
+      'id',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    id: number,
+  ): Promise<Ticket> {
     return this.ticketsService.findById(id);
   }
 
   @Post()
-  async createTicket(@Body() createTicketDto: CreateTicketDto) {
+  async createTicket(
+    @Body() createTicketDto: CreateTicketDto,
+  ): Promise<Ticket> {
     return this.ticketsService.create(createTicketDto);
   }
 
   @Delete(':id')
-  async deleteTicket(@Param('id', new ParseIntPipe()) id: number) {
+  async deleteTicket(
+    @Param(
+      'id',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    id: number,
+  ): Promise<DeleteResult> {
     return this.ticketsService.remove(id);
   }
 
@@ -49,7 +68,7 @@ export class TicketsController {
   async assignTicketToUser(
     @Body() { userId, ticketId }: AssignTicketToUserDto,
   ) {
-    return this.commandBus.execute(
+    return this.commandBus.execute<AssignTicketToUserCommand, Promise<Ticket>>(
       new AssignTicketToUserCommand(userId, ticketId),
     );
   }
@@ -58,8 +77,9 @@ export class TicketsController {
   async unassignTicketFromUser(
     @Body() { userId, ticketId }: UnassignTicketFromUserDto,
   ) {
-    return this.commandBus.execute(
-      new UnassignTicketFromUserCommand(userId, ticketId),
-    );
+    return this.commandBus.execute<
+      UnassignTicketFromUserCommand,
+      Promise<Ticket>
+    >(new UnassignTicketFromUserCommand(userId, ticketId));
   }
 }

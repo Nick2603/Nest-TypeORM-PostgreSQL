@@ -5,6 +5,7 @@ import { UsersModule } from './user/users.module';
 import { ConfigWrapperModule } from './config/config-wrapper.module';
 import { TicketsModule } from './ticket/tickets.module';
 import { UnhandledExceptionHandlerModule } from './cqrs/unhandled-exception.handler.module';
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import { UnhandledExceptionHandlerModule } from './cqrs/unhandled-exception.hand
     TicketsModule,
     UnhandledExceptionHandlerModule,
   ],
-  controllers: [],
+  controllers: [AppController],
   providers: [],
 })
 export class AppModule {}

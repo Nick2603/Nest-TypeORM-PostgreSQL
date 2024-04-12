@@ -4,14 +4,14 @@ export class UpdateUserDto {
   @Length(2, 25)
   @IsString({ message: 'Please provide your first name' })
   @IsOptional()
-  firstName?: string;
+  readonly firstName?: string;
 
   @Length(2, 25)
   @IsString({ message: 'Please provide your last name' })
   @IsOptional()
-  lastName?: string;
+  readonly lastName?: string;
 
   @IsBoolean()
   @IsOptional()
-  isActive?: boolean;
+  readonly isActive?: boolean;
 }

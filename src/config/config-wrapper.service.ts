@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ConfigurationType } from './configuration';
+import { PluralNamingStrategy } from 'src/database/naming.strategy';
+import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
 @Injectable()
 export class ConfigWrapperService {
@@ -9,26 +11,22 @@ export class ConfigWrapperService {
   ) {}
 
   get appPort(): number {
-    return this.configService.get('appPort', { infer: true });
+    return this.configService.get('app.port', { infer: true });
   }
 
-  get dbName(): string {
-    return this.configService.get('dbName', { infer: true });
-  }
-
-  get dbUser(): string {
-    return this.configService.get('dbUser', { infer: true });
-  }
-
-  get dbPassword(): string {
-    return this.configService.get('dbPassword', { infer: true });
-  }
-
-  get dbHost(): string {
-    return this.configService.get('dbHost', { infer: true });
-  }
-
-  get dbPort(): number {
-    return this.configService.get('dbPort', { infer: true });
+  get dataBaseConfig(): Partial<TypeOrmModuleOptions> {
+    return {
+      type: 'postgres',
+      host: this.configService.get('database.host', { infer: true }),
+      port: this.configService.get('database.port', { infer: true }),
+      username: this.configService.get('database.user', { infer: true }),
+      password: this.configService.get('database.password', { infer: true }),
+      database: this.configService.get('database.name', { infer: true }),
+      entities: [],
+      namingStrategy: new PluralNamingStrategy(),
+      synchronize: true,
+      autoLoadEntities: true,
+      logging: 'all',
+    };
   }
 }
