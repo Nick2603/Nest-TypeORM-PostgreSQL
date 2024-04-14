@@ -14,7 +14,7 @@ export class ConfigWrapperService {
     return this.configService.get('app.port', { infer: true });
   }
 
-  get dataBaseConfig(): Partial<TypeOrmModuleOptions> {
+  get dataBaseConfig(): TypeOrmModuleOptions {
     return {
       type: 'postgres',
       host: this.configService.get('database.host', { infer: true }),

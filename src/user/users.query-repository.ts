@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
-import { ILike, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { QuerySearchParams } from './interfaces';
 
 @Injectable()
@@ -20,20 +20,30 @@ export class UsersQueryRepository {
     lastName,
     isActive,
   }: QuerySearchParams): Promise<User[]> {
-    const firstNameFilter = firstName ? ILike(`%${firstName}%`) : undefined;
-    const lastNameFilter = lastName ? ILike(`%${lastName}%`) : undefined;
-    const isActiveFilter = typeof isActive === 'boolean' ? isActive : undefined;
-
     try {
-      return this.usersRepository.find({
-        where: {
-          firstName: firstNameFilter,
-          lastName: lastNameFilter,
-          isActive: isActiveFilter,
-        },
-        order: { lastName: 'asc', firstName: 'asc' },
-        relations: ['tickets'],
-      });
+      const queryBuilder = this.usersRepository.createQueryBuilder('u');
+
+      queryBuilder.addOrderBy('u.lastName', 'ASC');
+      queryBuilder.addOrderBy('u.firstName', 'DESC');
+
+      queryBuilder.leftJoinAndSelect('u.tickets', 't');
+
+      if (firstName)
+        queryBuilder.andWhere('u.firstName ILIKE :firstName', {
+          firstName: `%${firstName}%`,
+        });
+
+      if (lastName)
+        queryBuilder.andWhere('u.lastName ILIKE :lastName', {
+          lastName: `%${lastName}%`,
+        });
+
+      if (isActive !== undefined)
+        queryBuilder.andWhere('u.isActive = :isActive', {
+          isActive,
+        });
+
+      return queryBuilder.getMany();
     } catch (error) {
       throw new BadRequestException(error);
     }

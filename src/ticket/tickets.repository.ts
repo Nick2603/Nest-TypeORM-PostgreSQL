@@ -14,7 +14,12 @@ export class TicketsRepository {
 
   async create(dto: CreateTicketDto): Promise<Ticket> {
     try {
-      return this.ticketsRepository.save(dto);
+      const ticket = new Ticket();
+
+      ticket.event = dto.event;
+      ticket.date = dto.date;
+
+      return this.ticketsRepository.save(ticket);
     } catch (error) {
       throw new BadRequestException(error);
     }

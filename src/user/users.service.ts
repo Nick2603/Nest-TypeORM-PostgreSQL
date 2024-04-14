@@ -3,7 +3,6 @@ import { UsersRepository } from './users.repository';
 import { User } from './user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { DeleteResult } from 'typeorm';
 import { UsersQueryRepository } from './users.query-repository';
 
 @Injectable()
@@ -25,7 +24,7 @@ export class UsersService {
     return this.usersRepository.update(id, dto);
   }
 
-  async remove(id: number): Promise<DeleteResult> {
-    return this.usersRepository.remove(id);
+  async remove(id: number): Promise<void> {
+    await this.usersRepository.remove(id);
   }
 }

@@ -16,7 +16,6 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { GetUsersQuery } from 'src/cqrs/queries/users/get-users.query';
 import { User } from './user.entity';
-import { DeleteResult } from 'typeorm';
 
 @Controller('users')
 export class UsersController {
@@ -71,7 +70,7 @@ export class UsersController {
       new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
     )
     id: number,
-  ): Promise<DeleteResult> {
+  ): Promise<void> {
     return this.usersService.remove(id);
   }
 }

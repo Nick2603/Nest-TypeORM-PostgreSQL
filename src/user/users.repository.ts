@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
-import { DeleteResult, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
@@ -18,7 +18,14 @@ export class UsersRepository {
 
   async create(dto: CreateUserDto): Promise<User> {
     try {
-      return this.usersRepository.save(dto);
+      const user = new User();
+
+      user.firstName = dto.firstName;
+      user.lastName = dto.lastName;
+
+      if (dto.isActive !== undefined) user.isActive = dto.isActive;
+
+      return this.usersRepository.save(user);
     } catch (error) {
       throw new BadRequestException(error);
     }
@@ -26,13 +33,17 @@ export class UsersRepository {
 
   async update(id: number, dto: UpdateUserDto): Promise<User> {
     try {
-      let userToUpdate = await this.usersRepository.findOneBy({
+      const userToUpdate = await this.usersRepository.findOneBy({
         id,
       });
 
       if (!userToUpdate) throw new NotFoundException('User not found');
 
-      userToUpdate = { ...userToUpdate, ...dto };
+      if (dto.firstName) userToUpdate.firstName = dto.firstName;
+
+      if (dto.lastName) userToUpdate.lastName = dto.lastName;
+
+      if (dto.isActive !== undefined) userToUpdate.isActive = dto.isActive;
 
       return this.usersRepository.save(userToUpdate);
     } catch (error) {
@@ -40,9 +51,9 @@ export class UsersRepository {
     }
   }
 
-  async remove(id: number): Promise<DeleteResult> {
+  async remove(id: number): Promise<void> {
     try {
-      return this.usersRepository.delete(id);
+      await this.usersRepository.delete(id);
     } catch (error) {
       throw new BadRequestException(error);
     }
